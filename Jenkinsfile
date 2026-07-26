@@ -52,5 +52,37 @@ pipeline {
                    '''
                   }  
             }
+	stage('Docker Login') {
+            steps {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'dockerhub-creds',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )
+                ]) {
+                    sh '''
+                        echo "$DOCKER_PASS" | docker login \
+                        -u "$DOCKER_USER" \
+                        --password-stdin
+                     '''
+                 }
+             }
+         }
+	stage('Tag Image') {
+            steps {
+                sh '''
+                  docker tag employee-management:${BUILD_NUMBER} \
+                  vinodbadiger/employee-management:${BUILD_NUMBER}
+                   '''
+                  }
+           }
+	stage('Push Image') {
+ 	    steps {
+       	        sh '''
+        	  docker push vinodbadiger/employee-management:${BUILD_NUMBER}
+       		   '''
+   		 }
+	  }
     }
 }
