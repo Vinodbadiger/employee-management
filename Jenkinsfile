@@ -73,14 +73,14 @@ pipeline {
             steps {
                 sh '''
                   docker tag employee-management:${BUILD_NUMBER} \
-                  vinodbadiger/employee-management:${BUILD_NUMBER}
+                  vinodb48/employee-management:${BUILD_NUMBER}
                    '''
                   }
            }
 	stage('Push Image') {
  	    steps {
        	        sh '''
-        	  docker push vinodbadiger/employee-management:${BUILD_NUMBER}
+        	  docker push vinodb48/employee-management:${BUILD_NUMBER}
        		   '''
    		 }
 	  }
