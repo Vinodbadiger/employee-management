@@ -38,5 +38,12 @@ pipeline {
                 '''
             }
         }
+        stage('Build Docker Image') {
+            steps {
+                sh '''
+                    docker build -t employee-management:${BUILD_NUMBER} .
+                   '''
+                  }  
+            }
     }
 }
