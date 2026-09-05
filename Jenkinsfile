@@ -84,5 +84,19 @@ pipeline {
        		   '''
    		 }
 	  }
+        stage('Test Kubernetes Connection') {
+            steps {
+                withCredentials([file(
+                    credentialsId: 'k8s-kubeconfig',
+            	    variable: 'KUBECONFIG'
+        	)]) {
+            	    sh '''
+               	       echo "Testing Kubernetes connection..."
+              	       kubectl get pods -n employee-app
+                       kubectl auth can-i patch deployments -n employee-app
+                    '''
+                    }
+                 }
+          }
     }
 }
