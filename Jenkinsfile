@@ -84,19 +84,31 @@ pipeline {
        		   '''
    		 }
 	  }
-        stage('Test Kubernetes Connection') {
-            steps {
-                withCredentials([file(
-                    credentialsId: 'k8s-kubeconfig',
-            	    variable: 'KUBECONFIG'
-        	)]) {
-            	    sh '''
-               	       echo "Testing Kubernetes connection..."
-              	       kubectl get pods -n employee-app
-                       kubectl auth can-i patch deployments -n employee-app
-                    '''
-                    }
+    stage('Deploy to Kubernetes') {
+        steps {
+            withCredentials([file(
+                credentialsId: 'k8s-kubeconfig',
+                variable: 'KUBECONFIG'
+            )]) {
+                sh '''
+                   echo "Applying Kubernetes manifests..."
+                   kubectl apply -f k8s/
+
+                   echo "Updating deployment image..."
+                   kubectl set image deployment/employee-management \
+                     employee-management=vinodb48/employee-management:${BUILD_NUMBER} \
+                     -n employee-app
+
+                   echo "Waiting for rollout..."
+                   kubectl rollout status deployment/employee-management \
+                     -n employee-app \
+                     --timeout=120s
+
+                   echo "Deployment completed."
+                   kubectl get pods -n employee-app -o wide
+                '''
                  }
-          }
+            }
+        }
     }
 }
