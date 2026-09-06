@@ -85,30 +85,32 @@ pipeline {
    		 }
 	  }
     stage('Deploy to Kubernetes') {
-        steps {
-            withCredentials([file(
-                credentialsId: 'k8s-kubeconfig',
-                variable: 'KUBECONFIG'
-            )]) {
-                sh '''
-                   echo "Applying Kubernetes manifests..."
-                   kubectl apply -f k8s/
+    steps {
+        withCredentials([file(
+            credentialsId: 'k8s-kubeconfig',
+            variable: 'KUBECONFIG'
+        )]) {
+            sh '''
+                echo "Deploying build ${BUILD_NUMBER} using Helm..."
 
-                   echo "Updating deployment image..."
-                   kubectl set image deployment/employee-management \
-                     employee-management=vinodb48/employee-management:${BUILD_NUMBER} \
-                     -n employee-app
+                helm upgrade --install employee-management \
+                  ./helm/employee-management \
+                  --namespace employee-app \
+                  --set image.tag=${BUILD_NUMBER} \
+                  --wait \
+                  --timeout 2m
 
-                   echo "Waiting for rollout..."
-                   kubectl rollout status deployment/employee-management \
-                     -n employee-app \
-                     --timeout=120s
+                echo "Helm deployment completed."
 
-                   echo "Deployment completed."
-                   kubectl get pods -n employee-app -o wide
-                '''
-                 }
-            }
+                helm status employee-management \
+                  -n employee-app
+
+                kubectl get pods \
+                  -n employee-app \
+                  -o wide
+            '''
         }
+    }
+}
     }
 }
