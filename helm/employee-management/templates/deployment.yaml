@@ -24,4 +24,4 @@ spec:
               protocol: TCP
 
           resources:
-            {{- toYaml .Values.resources | nindent 10 }}
+            {{- toYaml .Values.resources | nindent 12 }}
