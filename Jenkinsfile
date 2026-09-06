@@ -96,7 +96,7 @@ pipeline {
                 helm upgrade --install employee-management \
                   ./helm/employee-management \
                   --namespace employee-app \
-                  --set image.tag=does-not-exist \
+                  --set image.tag=${BUILD_NUMBER} \
                   --wait \
 				  --rollback-on-failure \
                   --timeout 2m
@@ -114,4 +114,46 @@ pipeline {
     }
 }
     }
+post {
+    failure {
+        withCredentials([file(
+            credentialsId: 'k8s-kubeconfig',
+            variable: 'KUBECONFIG'
+        )]) {
+            sh '''
+                echo "======================================"
+                echo "DEPLOYMENT FAILURE DIAGNOSTICS"
+                echo "======================================"
+
+                echo ""
+                echo "Helm history:"
+                helm history employee-management \
+                  -n employee-app || true
+
+                echo ""
+                echo "Deployment status:"
+                kubectl get deployment employee-management \
+                  -n employee-app \
+                  -o wide || true
+
+                echo ""
+                echo "Pods:"
+                kubectl get pods \
+                  -n employee-app \
+                  -o wide || true
+
+                echo ""
+                echo "Current deployed image:"
+                kubectl get deployment employee-management \
+                  -n employee-app \
+                  -o jsonpath='{.spec.template.spec.containers[0].image}{"\\n"}' \
+                  || true
+            '''
+        }
+    }
+
+    success {
+        echo 'Pipeline completed successfully.'
+    }
+}
 }
