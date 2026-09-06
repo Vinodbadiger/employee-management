@@ -96,7 +96,7 @@ pipeline {
                 helm upgrade --install employee-management \
                   ./helm/employee-management \
                   --namespace employee-app \
-                  --set image.tag=${BUILD_NUMBER} \
+                  --set image.tag=does-not-exist \
                   --wait \
 				  --rollback-on-failure \
                   --timeout 2m
