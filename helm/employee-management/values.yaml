@@ -1,0 +1,18 @@
+replicaCount: 2
+
+image:
+  repository: vinodb48/employee-management
+  tag: "16"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+ingress:
+  enabled: true
+  className: traefik
+  host: employee.local
+  path: /
+  pathType: Prefix
