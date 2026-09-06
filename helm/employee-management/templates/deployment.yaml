@@ -45,3 +45,5 @@ spec:
           envFrom:
             - configMapRef:
                 name: employee-management-config
+            - secretRef:
+                name: {{ .Values.secret.name }}

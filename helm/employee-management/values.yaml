@@ -41,3 +41,6 @@ probes:
 config:
   appEnv: dev
   logLevel: INFO
+
+secret:
+  name: employee-management-secret
