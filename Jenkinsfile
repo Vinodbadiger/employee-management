@@ -98,6 +98,7 @@ pipeline {
                   --namespace employee-app \
                   --set image.tag=${BUILD_NUMBER} \
                   --wait \
+				  --rollback-on-failure \
                   --timeout 2m
 
                 echo "Helm deployment completed."
