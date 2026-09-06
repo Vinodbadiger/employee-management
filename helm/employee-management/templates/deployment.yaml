@@ -42,3 +42,6 @@ spec:
             periodSeconds: {{ .Values.probes.liveness.periodSeconds }}
             timeoutSeconds: {{ .Values.probes.liveness.timeoutSeconds }}
             failureThreshold: {{ .Values.probes.liveness.failureThreshold }}
+          envFrom:
+            - configMapRef:
+                name: employee-management-config

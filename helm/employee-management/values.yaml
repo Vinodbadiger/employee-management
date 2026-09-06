@@ -38,3 +38,6 @@ probes:
     periodSeconds: 10
     timeoutSeconds: 2
     failureThreshold: 3
+config:
+  appEnv: dev
+  logLevel: INFO
